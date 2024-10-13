@@ -11,10 +11,10 @@ class HomePage extends StatelessWidget {
 
     // Define unique parking spot names
     final List<String> parkingSpots = [
-      'Downtown Parking Lot',
-      'Central Plaza Parking',
-      'Riverside Garage',
-      'Green Park Parking Area',
+      'Bindu Chowk Parking Area - Mahalaxmi Mandir',
+      'Kolhapur Airport Parking Area',
+      'KMC Pay and Park Area',
+      'Rajaramian Parking Area',
     ];
 
     return SingleChildScrollView(

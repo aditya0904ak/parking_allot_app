@@ -106,13 +106,13 @@ class _BookingsPageState extends State<BookingsPage> {
                         selectedPriceIndex = index;
                       });
                       Navigator.of(context).pop(); // Close price dialog
-                      showConfirmBookingDialog(); // Show confirmation dialog
+                      showConfirmBookingDialog();
                     },
                     child: Container(
                       width: 80,
                       margin: const EdgeInsets.symmetric(horizontal: 8.0),
                       decoration: BoxDecoration(
-                        color: bgColor, // Apply color gradient based on price
+                        color: bgColor,
                         borderRadius: BorderRadius.circular(15),
                         boxShadow: [
                           BoxShadow(

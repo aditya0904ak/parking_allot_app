@@ -1,9 +1,8 @@
 // home_page.dart
 
 import 'package:flutter/material.dart';
+import 'package:project_ui_demo/my_bookings.dart';
 import 'home_page.dart';
-import 'package:project_ui_demo/widgets/booking_page.dart';
-
 class NavBar extends StatefulWidget {
   const NavBar({super.key});
 
@@ -15,10 +14,10 @@ class _NavBarState extends State<NavBar> {
   int _selectedIndex = 0;
 
   // List of pages to display in the body based on the selected index
-  final List<Widget> _pages = const [
-    HomePage(), // Use the imported HomePage widget
-    BookingsPage(),
-    ProfilePage(),
+  final List<Widget> _pages = [
+    const HomePage(), // Use the imported HomePage widget
+    MyBookingsPage(),
+    const ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
