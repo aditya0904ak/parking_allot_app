@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:tflite_flutter/tflite_flutter.dart';
+
+
 
 class BookingsPage extends StatefulWidget {
   const BookingsPage({super.key});
@@ -45,7 +48,7 @@ class _BookingsPageState extends State<BookingsPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Time Warning'),
+          title: const Text('Time Warning'),
           content: Text('Slot ${index + 1} will be unbooked in $warningTime seconds!'),
           actions: [
             TextButton(
@@ -177,7 +180,7 @@ class _BookingsPageState extends State<BookingsPage> {
                   startTimer(selectedSlot);
                 }
               },
-              child: Text('Confirm'),
+              child: const Text('Confirm'),
             ),
           ],
         );
@@ -185,11 +188,12 @@ class _BookingsPageState extends State<BookingsPage> {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Parking Slot Booking'),
+        title: const Text('Parking Slot Booking'),
         backgroundColor: Colors.yellow[700],
       ),
       body: Padding(

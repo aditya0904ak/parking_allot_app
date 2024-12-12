@@ -10,17 +10,16 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
-  void initState() {
-    super.initState();
-    Timer(const Duration(seconds: 5), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const NavBar()),
-      );
-    });
-  }
+  // void initState() {
+  //   super.initState();
+  //   Timer(const Duration(seconds: 5), () {
+  //     Navigator.pushReplacement(
+  //       context,
+  //       MaterialPageRoute(builder: (context) => const NavBar()),
+  //     );
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -29,17 +28,17 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset('assets/images/entry_logo.png',height: 100,width: 100,),
-          const SizedBox(height: 10,),
-          const Center(
-              child: Text('ParkIT!', style: TextStyle(fontSize: 25, color: Colors.black)),
+          Image.asset(
+            'assets/images/splash_img.png',
+            height: 300,
+            width: double.infinity, // Makes the image span the full width
+            fit: BoxFit.cover, // Ensures the image fills the width proportionally
           ),
-          const Center(
-              child: Text('Smart Parking Allotment Application', style: TextStyle(fontSize: 13)),
-          ),
+          const SizedBox(height: 10),
+
+          Image.asset('assets/images/park_it_text.png'),
         ],
       ),
     );
   }
 }
-
