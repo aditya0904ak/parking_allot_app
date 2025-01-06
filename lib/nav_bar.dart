@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_ui_demo/my_bookings.dart';
 import 'home_page.dart';
+import 'package:project_ui_demo/profile_page.dart';
 class NavBar extends StatefulWidget {
   const NavBar({super.key});
 
@@ -64,13 +65,13 @@ class _NavBarState extends State<NavBar> {
 
 
 // Profile Page Widget
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Profile Page!'),
-    );
-  }
-}
+// class ProfilePage extends StatelessWidget {
+//   const ProfilePage({super.key});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return const Center(
+//       child: Text('Profile Page!'),
+//     );
+//   }
+// }
