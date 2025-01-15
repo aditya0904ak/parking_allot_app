@@ -7,9 +7,8 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double imageWidth = MediaQuery.of(context).size.width;
+    double screenWidth = MediaQuery.of(context).size.width;
 
-    // Define unique parking spot names
     final List<String> parkingSpots = [
       'Bindu Chowk Parking Area - Mahalaxmi Mandir',
       'Kolhapur Airport Parking Area',
@@ -17,104 +16,155 @@ class HomePage extends StatelessWidget {
       'Rajaramian Parking Area',
     ];
 
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          // Add the search bar
-          SearchBar1(onSearch: (query) {
-            // Implement search functionality here
-            print('Search query: $query'); // For demonstration purposes
-          }),
-          // Map or List of Nearby Parking Spots
-          Container(
-            height: 200, // Placeholder for map or list
-            color: Colors.grey[200],
-            child: Center(
-              child: Image.asset(
-                'assets/images/google_maps4.png',
-                height: 200,
-                width: imageWidth,
-                fit: BoxFit.cover,
+    return Scaffold(
+      backgroundColor: Color(0xFFF5F6FA),
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SearchBar1(onSearch: (query) {
+                print('Search query: $query');
+              }),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Text(
+                'Available Parking Spots',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1A1D1E),
+                ),
               ),
             ),
           ),
-          const SizedBox(height: 30),
-          // List of Parking Spots
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: parkingSpots.length, // Dynamically set count
-            itemBuilder: (context, index) {
-              // Adjust the index to start from 1
-              final displayIndex = index + 1;
-              return GestureDetector(
-                onTap: () {
-                  // Navigate to booking page
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const BookingsPage(),
-                    ),
-                  );
-                },
-                child: Container(
-                  margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                  padding: const EdgeInsets.all(12.0),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Colors.yellow[100]!, Colors.lime[50]!],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(15.0),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.blue.withOpacity(0.3),
-                        spreadRadius: 2,
-                        blurRadius: 6,
-                        offset: const Offset(0, 4),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final displayIndex = index + 1;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const BookingsPage(),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color(0xFF5C5EDE).withOpacity(0.2),
+                            blurRadius: 10,
+                            spreadRadius: 0,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      // Parking Image
-                      Container(
-                        width: 80.0,
-                        height: 80.0,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.0),
-                          image: DecorationImage(
-                            image: AssetImage('assets/images/parking_image_$displayIndex.png'), // Update with new path
-                            fit: BoxFit.cover,
+                      child: Card(
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          side: BorderSide(color: Colors.grey.shade200),
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Row(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(15),
+                                  bottomLeft: Radius.circular(15),
+                                ),
+                                child: Image.asset(
+                                  'assets/images/parking_image_$displayIndex.png',
+                                  width: 100,
+                                  height: 100,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        parkingSpots[index],
+                                        style: TextStyle(
+                                          fontSize: 16.0,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFF1A1D1E),
+                                        ),
+                                      ),
+                                      SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.location_on,
+                                            color: Color(0xFF5C5EDE),
+                                            size: 16,
+                                          ),
+                                          SizedBox(width: 4),
+                                          Text(
+                                            '2.5 km away',
+                                            style: TextStyle(
+                                              color: Color(0xFF6B7280),
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                          SizedBox(width: 16),
+                                          Icon(
+                                            Icons.local_parking,
+                                            color: Color(0xFF5C5EDE),
+                                            size: 16,
+                                          ),
+                                          SizedBox(width: 4),
+                                          Text(
+                                            '15 spots',
+                                            style: TextStyle(
+                                              color: Color(0xFF6B7280),
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: Color(0xFF5C5EDE),
+                                  size: 18,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                      const SizedBox(width: 16.0),
-                      // Parking Name
-                      Expanded(
-                        child: Text(
-                          parkingSpots[index],
-                          style: const TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blueGrey,
-                          ),
-                        ),
-                      ),
-                      // Arrow Icon
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        color: Colors.blueAccent[200],
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+              childCount: parkingSpots.length,
+            ),
           ),
         ],
       ),
     );
   }
 }
+

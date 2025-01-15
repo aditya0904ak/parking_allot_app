@@ -73,7 +73,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     return Container(
       height: 200,
       decoration: const BoxDecoration(
-        color: Colors.yellow,
+        color: Color(0xFF5C5EDE),
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(30),
           bottomRight: Radius.circular(30),
@@ -111,8 +111,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
           _buildInfoTile(Icons.email, 'Email', 'vedanteparth@gmail.com'),
           _buildInfoTile(Icons.phone, 'Phone', '+91 7249516045'),
           _buildInfoTile(Icons.car_rental, 'Car Number', 'MH 09 AA 0001'),
-          _buildInfoTile(
-              Icons.location_on, 'Address', 'Plot 1, Kolhapur, India'),
+          _buildInfoTile(Icons.location_on, 'Address', 'Plot 1, Kolhapur, India'),
           const SizedBox(height: 20),
         ],
       ),
@@ -124,7 +123,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
-          Icon(icon, color: Colors.yellow[700]),
+          Icon(icon, color: Color(0xFF5C5EDE)),
           const SizedBox(width: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
