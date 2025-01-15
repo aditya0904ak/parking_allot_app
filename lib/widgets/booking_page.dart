@@ -194,7 +194,7 @@ class _BookingsPageState extends State<BookingsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Parking Slot Booking'),
-        backgroundColor: Color(0xFF5C5EDE),
+        backgroundColor: Colors.yellow,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -250,7 +250,7 @@ class _BookingsPageState extends State<BookingsPage> {
                             if (bookedSlots[index])
                               Text(
                                 'Time Left: ${countdownTimers[index]}s',
-                                style: TextStyle(color: Color(0xFF5C5EDE)),
+                                style: TextStyle(color: Colors.yellow),
                               ),
                           ],
                         ),

@@ -35,7 +35,7 @@ class _NavBarState extends State<NavBar> {
           'ParkIT',
           style: TextStyle(color: Colors.black),
         ),
-        backgroundColor: Color(0xFF5C5EDE),
+        backgroundColor: Colors.yellow,
       ),
       body: _pages[_selectedIndex], // Display the current page
       bottomNavigationBar: BottomNavigationBar(
@@ -54,7 +54,7 @@ class _NavBarState extends State<NavBar> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Color(0xFF5C5EDE),
+        selectedItemColor: Colors.yellow,
         onTap: _onItemTapped,
       ),
     );

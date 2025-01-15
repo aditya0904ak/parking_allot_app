@@ -61,7 +61,7 @@ class HomePage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(15),
                         boxShadow: [
                           BoxShadow(
-                            color: Color(0xFF5C5EDE).withOpacity(0.2),
+                            color: Colors.yellow.withOpacity(0.2),
                             blurRadius: 10,
                             spreadRadius: 0,
                             offset: Offset(0, 4),
@@ -112,7 +112,7 @@ class HomePage extends StatelessWidget {
                                         children: [
                                           Icon(
                                             Icons.location_on,
-                                            color: Color(0xFF5C5EDE),
+                                            color: Colors.yellow,
                                             size: 16,
                                           ),
                                           SizedBox(width: 4),
@@ -126,7 +126,7 @@ class HomePage extends StatelessWidget {
                                           SizedBox(width: 16),
                                           Icon(
                                             Icons.local_parking,
-                                            color: Color(0xFF5C5EDE),
+                                            color: Colors.yellow,
                                             size: 16,
                                           ),
                                           SizedBox(width: 4),
@@ -147,7 +147,7 @@ class HomePage extends StatelessWidget {
                                 padding: const EdgeInsets.all(12.0),
                                 child: Icon(
                                   Icons.arrow_forward_ios,
-                                  color: Color(0xFF5C5EDE),
+                                  color: Colors.yellow,
                                   size: 18,
                                 ),
                               ),

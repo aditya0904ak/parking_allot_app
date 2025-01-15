@@ -73,7 +73,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     return Container(
       height: 200,
       decoration: const BoxDecoration(
-        color: Color(0xFF5C5EDE),
+        color: Colors.yellow,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(30),
           bottomRight: Radius.circular(30),
@@ -123,7 +123,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
-          Icon(icon, color: Color(0xFF5C5EDE)),
+          Icon(icon, color: Colors.yellow),
           const SizedBox(width: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
