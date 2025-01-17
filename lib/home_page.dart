@@ -1,14 +1,63 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:project_ui_demo/widgets/booking_page.dart';
 import 'package:project_ui_demo/widgets/search_bar.dart';
+import 'map_config_page.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
+  State<HomePage> createState() => _HomePageState();
+}
 
+class _HomePageState extends State<HomePage> {
+  LatLng? _currentLocation;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCurrentLocation();
+  }
+
+  Future<void> _fetchCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Check if location services are enabled
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled
+      return;
+    }
+
+    // Check location permissions
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are permanently denied
+      return;
+    }
+
+    // Get the current location
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      _currentLocation = LatLng(position.latitude, position.longitude);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final List<String> parkingSpots = [
       'Bindu Chowk Parking Area - Mahalaxmi Mandir',
       'Kolhapur Airport Parking Area',
@@ -17,24 +66,74 @@ class HomePage extends StatelessWidget {
     ];
 
     return Scaffold(
-      backgroundColor: Color(0xFFF5F6FA),
+      backgroundColor: const Color(0xFFF5F6FA),
       body: CustomScrollView(
         slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: SearchBar1(onSearch: (query) {
-                print('Search query: $query');
-              }),
+          SliverAppBar(
+            expandedHeight: 250.0,
+            floating: false,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(
+                'Find Parking',
+                style: TextStyle(
+                  color: Colors.yellow[500],
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                ),
+              ),
+              background: _currentLocation == null
+                  ? const Center(child: CircularProgressIndicator())
+                  : FlutterMap(
+                      options: MapOptions(
+                        center: _currentLocation,
+                        zoom: 15.0,
+                      ),
+                      children: [
+                        TileLayer(
+                          urlTemplate:
+                              'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          subdomains: ['a', 'b', 'c'],
+                        ),
+                        MarkerLayer(
+                          markers: [
+                            Marker(
+                              width: 80.0,
+                              height: 80.0,
+                              point: _currentLocation!,
+                              builder: (ctx) => const Icon(
+                                Icons.location_on,
+                                color: Colors.red,
+                                size: 40,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
             ),
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SearchBar1(onSearch: (query) {
+                    print('Search query: $query');
+                  }),
+                  const SizedBox(height: 16),
+                ],
+              ),
+            ),
+          ),
+          const SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
               child: Text(
                 'Available Parking Spots',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF1A1D1E),
                 ),
@@ -64,7 +163,7 @@ class HomePage extends StatelessWidget {
                             color: Colors.yellow.withOpacity(0.2),
                             blurRadius: 10,
                             spreadRadius: 0,
-                            offset: Offset(0, 4),
+                            offset: const Offset(0, 4),
                           ),
                         ],
                       ),
@@ -74,85 +173,83 @@ class HomePage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(15),
                           side: BorderSide(color: Colors.grey.shade200),
                         ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Row(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(15),
-                                  bottomLeft: Radius.circular(15),
-                                ),
-                                child: Image.asset(
-                                  'assets/images/parking_image_$displayIndex.png',
-                                  width: 100,
-                                  height: 100,
-                                  fit: BoxFit.cover,
-                                ),
+                        child: Row(
+                          children: [
+                            ClipRRect(
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(15),
+                                bottomLeft: Radius.circular(15),
                               ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        parkingSpots[index],
-                                        style: TextStyle(
-                                          fontSize: 16.0,
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(0xFF1A1D1E),
+                              child: Image.asset(
+                                'assets/images/parking_image_$displayIndex.png',
+                                width: 120,
+                                height: 120,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      parkingSpots[index],
+                                      style: const TextStyle(
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF1A1D1E),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.location_on,
+                                          color: Colors.yellow.shade700,
+                                          size: 18,
                                         ),
-                                      ),
-                                      SizedBox(height: 8),
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            Icons.location_on,
-                                            color: Colors.yellow,
-                                            size: 16,
+                                        const SizedBox(width: 4),
+                                        const Text(
+                                          '2.5 km away',
+                                          style: TextStyle(
+                                            color: Color(0xFF6B7280),
+                                            fontSize: 16,
                                           ),
-                                          SizedBox(width: 4),
-                                          Text(
-                                            '2.5 km away',
-                                            style: TextStyle(
-                                              color: Color(0xFF6B7280),
-                                              fontSize: 14,
-                                            ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.local_parking,
+                                          color: Colors.yellow.shade700,
+                                          size: 18,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        const Text(
+                                          '15 spots available',
+                                          style: TextStyle(
+                                            color: Color(0xFF6B7280),
+                                            fontSize: 16,
                                           ),
-                                          SizedBox(width: 16),
-                                          Icon(
-                                            Icons.local_parking,
-                                            color: Colors.yellow,
-                                            size: 16,
-                                          ),
-                                          SizedBox(width: 4),
-                                          Text(
-                                            '15 spots',
-                                            style: TextStyle(
-                                              color: Color(0xFF6B7280),
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: Colors.yellow,
-                                  size: 18,
-                                ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Icon(
+                                Icons.arrow_forward_ios,
+                                color: Colors.yellow.shade700,
+                                size: 20,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -167,4 +264,3 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-
