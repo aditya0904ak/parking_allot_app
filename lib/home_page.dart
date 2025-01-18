@@ -4,7 +4,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:project_ui_demo/widgets/booking_page.dart';
 import 'package:project_ui_demo/widgets/search_bar.dart';
-import 'map_config_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,11 +14,29 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   LatLng? _currentLocation;
+  final ScrollController _scrollController = ScrollController();
+  bool _isScrolled = false;
+  final MapController _mapController = MapController();
 
   @override
   void initState() {
     super.initState();
     _fetchCurrentLocation();
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (_scrollController.offset > 0 && !_isScrolled) {
+      setState(() => _isScrolled = true);
+    } else if (_scrollController.offset <= 0 && _isScrolled) {
+      setState(() => _isScrolled = false);
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchCurrentLocation() async {
@@ -66,87 +83,160 @@ class _HomePageState extends State<HomePage> {
     ];
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F6FA),
+      backgroundColor: Colors.white,
       body: CustomScrollView(
+        controller: _scrollController,
         slivers: [
           SliverAppBar(
-            expandedHeight: 250.0,
+            expandedHeight: 300.0,
             floating: false,
             pinned: true,
+            elevation: 0,
+            backgroundColor: _isScrolled ? Colors.white : Colors.transparent,
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
                 'Find Parking',
                 style: TextStyle(
-                  color: Colors.yellow[500],
+                  color: _isScrolled ? Colors.black87 : Color(0xFFFFC107),
                   fontWeight: FontWeight.bold,
                   fontSize: 24,
                 ),
               ),
-              background: _currentLocation == null
-                  ? const Center(child: CircularProgressIndicator())
-                  : FlutterMap(
-                      options: MapOptions(
-                        center: _currentLocation,
-                        zoom: 15.0,
-                      ),
-                      children: [
-                        TileLayer(
-                          urlTemplate:
-                              'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                          subdomains: ['a', 'b', 'c'],
-                        ),
-                        MarkerLayer(
-                          markers: [
-                            Marker(
-                              width: 80.0,
-                              height: 80.0,
-                              point: _currentLocation!,
-                              builder: (ctx) => const Icon(
-                                Icons.location_on,
-                                color: Colors.red,
-                                size: 40,
-                              ),
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  _currentLocation == null
+                      ? Center(
+                          child: CircularProgressIndicator(
+                            color: Color(0xFFFFC107),
+                          ),
+                        )
+                      : FlutterMap(
+                          mapController: _mapController,
+                          options: MapOptions(
+                            center: _currentLocation,
+                            zoom: 15.0,
+                            interactiveFlags: InteractiveFlag.all,
+                            enableMultiFingerGestureRace: true,
+                            onTap: (tapPosition, point) {
+                              print('Map tapped at $point');
+                            },
+                          ),
+                          children: [
+                            TileLayer(
+                              urlTemplate:
+                                  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                              subdomains: ['a', 'b', 'c'],
+                            ),
+                            MarkerLayer(
+                              markers: [
+                                Marker(
+                                  width: 80.0,
+                                  height: 80.0,
+                                  point: _currentLocation!,
+                                  builder: (ctx) => GestureDetector(
+                                    onTap: () {
+                                      print('Current location marker tapped');
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Color(0xFFFFC107),
+                                        shape: BoxShape.circle,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black26,
+                                            blurRadius: 8,
+                                            offset: Offset(0, 4),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Icon(
+                                        Icons.location_on,
+                                        color: Colors.white,
+                                        size: 30,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      ],
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black.withOpacity(0.4),
+                          Colors.transparent,
+                        ],
+                      ),
                     ),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SearchBar1(onSearch: (query) {
-                    print('Search query: $query');
-                  }),
-                  const SizedBox(height: 16),
+                  ),
                 ],
               ),
             ),
           ),
-          const SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-              child: Text(
-                'Available Parking Spots',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF1A1D1E),
-                ),
+          SliverToBoxAdapter(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: Offset(0, -5),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(20),
+                    child: SearchBar1(onSearch: (query) {
+                      print('Search query: $query');
+                    }),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Available Parking Spots',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {},
+                          child: Text(
+                            'See All',
+                            style: TextStyle(
+                              color: Color(0xFFFFC107),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                final displayIndex = index + 1;
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  child: GestureDetector(
+          SliverPadding(
+            padding: EdgeInsets.all(20),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final displayIndex = index + 1;
+                  return GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
@@ -156,107 +246,137 @@ class _HomePageState extends State<HomePage> {
                       );
                     },
                     child: Container(
+                      margin: EdgeInsets.only(bottom: 16),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.yellow.withOpacity(0.2),
-                            blurRadius: 10,
-                            spreadRadius: 0,
-                            offset: const Offset(0, 4),
+                            color: Color(0xFFFFC107).withOpacity(0.1),
+                            blurRadius: 20,
+                            offset: Offset(0, 4),
                           ),
                         ],
                       ),
-                      child: Card(
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                          side: BorderSide(color: Colors.grey.shade200),
-                        ),
-                        child: Row(
-                          children: [
-                            ClipRRect(
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(15),
-                                bottomLeft: Radius.circular(15),
-                              ),
-                              child: Image.asset(
-                                'assets/images/parking_image_$displayIndex.png',
-                                width: 120,
-                                height: 120,
-                                fit: BoxFit.cover,
-                              ),
+                      child: Column(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(20),
                             ),
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                            child: Image.asset(
+                              'assets/images/parking_image_$displayIndex.png',
+                              height: 150,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  parkingSpots[index],
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                SizedBox(height: 12),
+                                Row(
                                   children: [
-                                    Text(
-                                      parkingSpots[index],
-                                      style: const TextStyle(
-                                        fontSize: 18.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFF1A1D1E),
-                                      ),
+                                    _buildInfoChip(
+                                      Icons.location_on,
+                                      '2.5 km away',
                                     ),
-                                    const SizedBox(height: 12),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.location_on,
-                                          color: Colors.yellow.shade700,
-                                          size: 18,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        const Text(
-                                          '2.5 km away',
-                                          style: TextStyle(
-                                            color: Color(0xFF6B7280),
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.local_parking,
-                                          color: Colors.yellow.shade700,
-                                          size: 18,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        const Text(
-                                          '15 spots available',
-                                          style: TextStyle(
-                                            color: Color(0xFF6B7280),
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                      ],
+                                    SizedBox(width: 16),
+                                    _buildInfoChip(
+                                      Icons.local_parking,
+                                      '15 spots available',
                                     ),
                                   ],
                                 ),
-                              ),
+                                SizedBox(height: 16),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      '₹50/hour',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFFFFC107),
+                                      ),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const BookingsPage(),
+                                          ),
+                                        );
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Color(0xFFFFC107),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 24,
+                                          vertical: 12,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'Book Now',
+                                        style: TextStyle(color: Colors.black87),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Icon(
-                                Icons.arrow_forward_ios,
-                                color: Colors.yellow.shade700,
-                                size: 20,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                );
-              },
-              childCount: parkingSpots.length,
+                  );
+                },
+                childCount: parkingSpots.length,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoChip(IconData icon, String label) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Color(0xFFFFC107).withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 16,
+            color: Color(0xFFFFC107),
+          ),
+          SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(
+              color: Colors.black54,
+              fontSize: 14,
             ),
           ),
         ],

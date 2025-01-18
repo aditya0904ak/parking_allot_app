@@ -15,7 +15,7 @@ class SearchBar1 extends StatelessWidget {
       ),
       child: TextField(
         onChanged: onSearch,
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           hintText: 'Search for parking spots...',
           hintStyle: TextStyle(
             color: Color(0xFF6B7280),
@@ -28,7 +28,7 @@ class SearchBar1 extends StatelessWidget {
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
         ),
-        style: TextStyle(
+        style: const TextStyle(
           color: Color(0xFF1A1D1E),
           fontSize: 14,
         ),
@@ -36,4 +36,3 @@ class SearchBar1 extends StatelessWidget {
     );
   }
 }
-
