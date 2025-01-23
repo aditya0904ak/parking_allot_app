@@ -370,7 +370,7 @@ class _BookingsPageState extends State<BookingsPage> {
                               Container(
                                 width: 30,
                                 color: Color(0xFFFFC107).withOpacity(0.1),
-                                child: Center(
+                                child: const Center(
                                   child: RotatedBox(
                                     quarterTurns: 3,
                                     child: Text(
@@ -399,20 +399,21 @@ class _BookingsPageState extends State<BookingsPage> {
           ),
           if (selectedSlot != -1)
             Container(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: ElevatedButton(
                 onPressed: showPricingOptions,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black87,
-                  minimumSize: Size(double.infinity, 50),
+                  backgroundColor: Color(0xFFFFC107),
+                  minimumSize: const Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
                 child: Text(
                   'Proceed with spot (F$selectedFloor-${selectedSlot + 1})',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
+                    color: Colors.black,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
