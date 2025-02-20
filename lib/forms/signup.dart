@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project_ui_demo/forms/login.dart';
+import 'package:project_ui_demo/services/login_signup_service.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -12,6 +13,14 @@ class _SignupPageState extends State<SignupPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _opacityAnimation;
+
+  AuthService _authService = new AuthService();
+
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   @override
   void initState() {
@@ -29,7 +38,49 @@ class _SignupPageState extends State<SignupPage>
   @override
   void dispose() {
     _controller.dispose();
+    _usernameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  void _signUp() async {
+    String username = _usernameController.text.trim();
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+    String confirmPassword = _confirmPasswordController.text.trim();
+
+    if (username.isEmpty ||
+        email.isEmpty ||
+        password.isEmpty ||
+        confirmPassword.isEmpty) {
+      _showMessage("All fields are required!");
+      return;
+    }
+
+    if (password != confirmPassword) {
+      _showMessage("Passwords do not match!");
+      return;
+    }
+
+    try {
+      await _authService.signUpWithEmailAndPassword(username, email, password);
+      _showMessage("Signup Successful!", isSuccess: true);
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => const LoginPage()));
+    } catch (e) {
+      _showMessage(e.toString());
+    }
+  }
+
+  void _showMessage(String message, {bool isSuccess = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isSuccess ? Colors.green : Colors.red,
+      ),
+    );
   }
 
   @override
@@ -112,17 +163,20 @@ class _SignupPageState extends State<SignupPage>
       ),
       child: Column(
         children: [
-          _buildTextField("Username", Icons.person_outline),
+          _buildTextField(
+              "Username", Icons.person_outline, _usernameController),
           const SizedBox(height: 16),
-          _buildTextField("Email", Icons.email_outlined),
+          _buildTextField("Email", Icons.email_outlined, _emailController),
           const SizedBox(height: 16),
-          _buildTextField("Password", Icons.lock_outline, isPassword: true),
+          _buildTextField("Password", Icons.lock_outline, _passwordController,
+              isPassword: true),
           const SizedBox(height: 16),
           _buildTextField("Confirm Password", Icons.lock_outline,
+              _confirmPasswordController,
               isPassword: true),
           const SizedBox(height: 24),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: _signUp,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black87,
               shape: RoundedRectangleBorder(
@@ -145,9 +199,11 @@ class _SignupPageState extends State<SignupPage>
     );
   }
 
-  Widget _buildTextField(String hint, IconData icon,
+  Widget _buildTextField(
+      String hint, IconData icon, TextEditingController controller,
       {bool isPassword = false}) {
     return TextField(
+      controller: controller,
       obscureText: isPassword,
       decoration: InputDecoration(
         hintText: hint,
@@ -205,29 +261,13 @@ class _SignupPageState extends State<SignupPage>
             borderRadius: BorderRadius.circular(15),
           ),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              height: 24,
-              width: 24,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/login_signup/google.png'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              "Sign up with Google",
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.black.withOpacity(0.7),
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
+        child: const Text(
+          "Sign up with Google",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.black87,
+          ),
         ),
       ),
     );
@@ -237,26 +277,13 @@ class _SignupPageState extends State<SignupPage>
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          "Already have an account? ",
-          style: TextStyle(
-            color: Colors.black.withOpacity(0.7),
-            fontSize: 14,
-          ),
-        ),
+        const Text("Already have an account? "),
         TextButton(
           onPressed: () {
-            Navigator.push(context,
+            Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (context) => const LoginPage()));
           },
-          child: const Text(
-            "Login",
-            style: TextStyle(
-              color: Colors.black87,
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-            ),
-          ),
+          child: const Text("Login"),
         ),
       ],
     );

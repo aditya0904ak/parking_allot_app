@@ -1,5 +1,6 @@
-package com.example.project_ui_demo
+package com.company.parkit  // Ensure this matches your AndroidManifest.xml package
 
 import io.flutter.embedding.android.FlutterActivity
 
-class MainActivity: FlutterActivity()
+class MainActivity : FlutterActivity() {
+}
